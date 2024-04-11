@@ -1,16 +1,20 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WeatherService {
-  API = "305b8d0b9ea7ea79d9ca3cd998b0a95f";
-  URL = "https://api.openweathermap.org/data/2.5/weather?lat=29.6520&lon=-82.3250&appid=305b8d0b9ea7ea79d9ca3cd998b0a95f&units=imperial";
+  API: string = environment.weatherKey;
+  URL = 'https://api.openweathermap.org/data/2.5/weather?lat=29.6520&lon=-82.3250&appid='+this.API+'&units=imperial';
   constructor(private http: HttpClient) { }
 
   getCurrentWeather(): Observable<any> {
     return this.http.get<any>(this.URL);
+  }
+  getTempLayer(): Observable<any> {
+    return this.http.get<any>('https://tile.openweathermap.org/map/temp_new/9/190/200.png?appid=' + this.API);
   }
 }

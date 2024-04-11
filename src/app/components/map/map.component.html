@@ -1,9 +1,32 @@
-<google-map height="765px" width="100%" [center]="center" [zoom]="zoom">
+<div class="flex flex-row justify-end bg-white rounded-lg p-1 mb-2">
+  <div class="form-control w-40 mr-4">
+    <label class="cursor-pointer label">
+      <span class="label-text text-lg text-[#ffa84c]/85 font-bold">Heat Map</span>
+      <input type="checkbox" [(ngModel)]="heatMap" (change)="displayTemp()" class="toggle [--tglbg:#ffdab3] hover:bg-[#ffa84c] bg-[#fdba74] border-[#fdba74]" checked />
+    </label>
+  </div>
+  <div class="form-control w-52">
+    <label class="cursor-pointer label">
+      <span class="label-text text-lg text-[#46a246]/85 font-bold">Cooling Centers</span>
+      <input type="checkbox" [(ngModel)]="centerView" class="toggle [--tglbg:#a7d1a7] hover:bg-[#46a246] bg-[#5eb15e] border-[#5eb15e]" checked />
+    </label>
+  </div>
+</div>
+<google-map height="700px" width="100%" [center]="center" [zoom]="zoom">
+  <ng-container *ngIf="centerView">
   <map-marker #marker="mapMarker" *ngFor="let markerObj of markers" [position]="markerObj.position" [title]="markerObj.title" [options]="coolingMarker" (mapClick)="openInfo(marker, markerObj)"></map-marker>
-  <map-marker #marker="mapMarker" *ngFor="let markerObj of parks" [position]="markerObj.position" [title]="markerObj.title" [options]="parkMarker" (mapClick)="openInfo(marker, markerObj)"></map-marker>
-  <map-info-window> 
+</ng-container>
+  <map-info-window #infoWindow> 
     <div class="font-semibold">{{ locationTitle }}</div>
     <div>{{ content }}</div>
+    <div class="font-semibold">Accessible Routes:</div>
+    <div *ngFor="let stop of closestBuses">
+      {{ stop }}
+    </div>
+  </map-info-window>
+  <map-info-window #routeInfo> 
+    <div class="font-semibold">{{ routeTitle }}</div>
+    <div>{{ routeContent }}</div>
   </map-info-window>
 </google-map>
 <div id="legend"><div class="text-lg text-[#5db95d] font-bold">Legend</div></div>
