@@ -39,6 +39,11 @@ export class MapComponent implements AfterViewInit{
       this.map.overlayMapTypes.clear();
     }
   }
+  displayStops() {
+    if (!this.centerView) {
+      this.loadClosest();
+    }
+  }
   loadGeoJSON(): void {
     this.httpClient.get('assets/route.geojson').subscribe((data: any) => {
       const features = data.features;
@@ -59,9 +64,14 @@ export class MapComponent implements AfterViewInit{
       return;
     }
     this.map.data.forEach((feature: any) => {
-      const routeId = feature.getProperty('route_id');
-      const isVisible = this.closestRoute(this.coolingCenter, routeId);
-      this.map.data.overrideStyle(feature, { visible: isVisible });
+      
+        const routeId = feature.getProperty('route_id');
+        const isVisible = this.closestRoute(this.coolingCenter, routeId);
+        this.map.data.overrideStyle(feature, { visible: isVisible });
+        if (!this.centerView) {
+          this.map.data.overrideStyle(feature, { visible: false });
+        }
+      
     });
   }
   ngAfterViewInit(): void {
