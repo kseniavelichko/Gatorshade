@@ -1,36 +1,79 @@
 import { Component , AfterViewInit, ViewChild} from '@angular/core';
 import { MapInfoWindow, GoogleMapsModule, GoogleMap, MapMarker } from '@angular/google-maps';
 import { CommonModule } from '@angular/common';
+import { WeatherService } from '../../services/weather.service';
+import { HttpClient } from '@angular/common/http';
+import { ToggleButtonModule } from 'primeng/togglebutton';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [GoogleMapsModule, MapMarker, CommonModule, MapInfoWindow],
+  imports: [GoogleMapsModule, FormsModule, ToggleButtonModule, MapMarker, CommonModule, MapInfoWindow],
   templateUrl: './map.component.html',
   styleUrl: './map.component.css'
 })
 export class MapComponent implements AfterViewInit{
   @ViewChild(MapInfoWindow, { static: false }) infoWindow: MapInfoWindow | any;
+  @ViewChild(MapInfoWindow, { static: false }) routeInfo: MapInfoWindow | any;
   @ViewChild(GoogleMap, { static: false }) map: GoogleMap | any;
-  constructor() {}
+  routeLayer: any;
+  constructor(private httpClient: HttpClient, private weatherService: WeatherService) {
+  }
+  heatMap: boolean = true;
+  centerView: boolean = true;
+  patterns: any[] = [];
+  coolingCenter: google.maps.LatLng | any;
+  closestBuses: Set<any> = new Set();
   icons: Record<string, any> = {
     blueStop: {
       name: "Cooling Center",
       icon: "../../assets/blue.png",
-    },
-    yellowStop: {
-      name: "Bus Stop",
-      icon: "../../assets/yellow.png",
-    },
-    redStop: {
-      name: "This stop needs more data input",
-      icon: "../../assets/red.png",
-    },
-    blueYellowStop: {
-      name: 'Park',
-      icon: "../../assets/blue-yellow.png"
     }
   };
+  displayTemp() {
+    if (this.heatMap) {
+      this.getWeather();
+    }
+    else {
+      this.map.overlayMapTypes.clear();
+    }
+  }
+  displayStops() {
+    if (!this.centerView) {
+      this.loadClosest();
+    }
+  }
+  loadGeoJSON(): void {
+    this.httpClient.get('assets/route.geojson').subscribe((data: any) => {
+      const features = data.features;
+      this.map.data.addGeoJson(data);
+      this.map.data.setStyle((feature: any) => ({
+        fillColor: '#' + feature.getProperty('color'),
+        strokeWeight: 3,
+        strokeColor: '#' + feature.getProperty('color'),
+        fillOpacity: 0.7,
+        visible: false
+      }));
+    });
+  }
+  loadClosest() {
+    this.closestBuses.clear();
+    if (!this.map || !this.map.data) {
+      console.error('Map or data layer is not initialized.');
+      return;
+    }
+    this.map.data.forEach((feature: any) => {
+      
+        const routeId = feature.getProperty('route_id');
+        const isVisible = this.closestRoute(this.coolingCenter, routeId);
+        this.map.data.overrideStyle(feature, { visible: isVisible });
+        if (!this.centerView) {
+          this.map.data.overrideStyle(feature, { visible: false });
+        }
+      
+    });
+  }
   ngAfterViewInit(): void {
     const legend = document.getElementById("legend") as HTMLElement;
     for (const key in this.icons) {
@@ -43,10 +86,33 @@ export class MapComponent implements AfterViewInit{
       legend.appendChild(div);
     }
     this.map.controls[google.maps.ControlPosition.TOP_RIGHT].push(legend);
+    this.getWeather();
+    this.loadGeoJSON();
+    this.loadClosest();
+  }
+  closestRoute(point: google.maps.LatLng, featureId: number): boolean {
+    var areTheyClose = false;
+    this.map.data.forEach((feature: any) => {
+      const properties = feature.getProperty('route_id');
+      if (properties === featureId) {
+        const geometry = feature.getGeometry();
+          for (let i = 0; i < geometry.getArray().length; i++) {
+            const vertex = geometry.getArray()[i];
+            const distance = google.maps.geometry.spherical.computeDistanceBetween(point, vertex);
+            if (distance <= 250) {
+              areTheyClose = true; 
+              this.closestBuses.add(properties + ": " + feature.getProperty('long_name'));
+            }
+        }
+      }
+    });
+    return areTheyClose;
   }
   display: any;
   content: any;
   locationTitle: any;
+  routeContent: any;
+  routeTitle: any;
   logCenter() {
     console.log(JSON.stringify(this.map.getCenter()))
   }
@@ -200,7 +266,8 @@ export class MapComponent implements AfterViewInit{
     }
   ]
   openInfo(marker: MapMarker, markerObj: any) {
-    console.log(markerObj);
+    this.coolingCenter = marker.getPosition();
+    this.loadClosest();
     this.locationTitle = markerObj.title;
     this.content = markerObj.address;
     if (this.infoWindow != undefined) this.infoWindow.open(marker);
@@ -209,6 +276,18 @@ export class MapComponent implements AfterViewInit{
       lat: 29.651,
       lng: -82.357
   };
+  getWeather(): void {
+    const temperatureLayer = new google.maps.ImageMapType({
+      getTileUrl: function(coord, zoom): string {
+          return 'https://tile.openweathermap.org/map/temp_new/' + zoom + '/' + coord.x + '/' + coord.y + '.png?appid=305b8d0b9ea7ea79d9ca3cd998b0a95f'
+      },
+      tileSize: new google.maps.Size(256, 256),
+      opacity: 0.9,
+      name: 'Temperature',
+      maxZoom: 9
+    });
+    this.map.overlayMapTypes.push(temperatureLayer);
+};
   blueIcon: google.maps.Icon = {
     url: '../../assets/blue.png',
     scaledSize: new google.maps.Size(30, 30)

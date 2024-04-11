@@ -1,12 +1,15 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 .editorconfig
+.angular/
 .vscode/
 src/environments
 .angular
 index.html
 ideas.txt
 key.txt
+key.txt
+index.html
 # Compiled output
 /dist
 /tmp
