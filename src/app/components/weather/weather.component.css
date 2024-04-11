@@ -17,7 +17,7 @@
     width: 100%;
     border-radius: 10px;
     font-weight: 700;
-    color: rgb(94, 177, 94);
+    color: #5eb15e;
 }
 .info {
     border: 4px solid rgb(167, 209, 167);
@@ -36,6 +36,6 @@
     border: 4px solid rgb(234, 88, 12, 0.4);
 }
 .warningOrangeLight {
-    color: rgb(253, 186, 116);
+    color: #fdba74;
     border: 4px solid rgb(253, 186, 116, 0.6);
 }
