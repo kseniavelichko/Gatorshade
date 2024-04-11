@@ -1,0 +1,26 @@
+<div class="page-content pb-8 bg-slate-100/40">
+  <div class="flex flex-row justify-between mb-1">
+    <div class="ml-4 mr-2">
+      <div class="flex flex-row">
+        <h1 class="text-5xl text-[#448b5c] font-bold">Gator</h1>
+        <h1 class="text-5xl text-slate-900/70 font-bold">Shade</h1>
+      </div>
+      <p class="float-right -mt-2 mr-1 text-[#717171] font-bold text-xs">By Ksenia Velichko</p>
+    </div>
+    <img class="h-10 mt-3 mr-4" src="assets/j&g.jpeg" alt="Just&Green Transportation Lab Logo" />
+  </div>
+  <div class="m-3">
+    <div class="flex justify-between items-center">
+        <h1 onclick="switchTabs('routes')" class="text-slate-900/70 cursor-pointer rounded-t-lg text-lg font-bold bg-slate-300/70 pl-2 pr-4">Real-Time Info</h1>
+        <div id="timeMain" class="font-bold text-slate-900/70 ml-8">{{ currentTime | date: 'EEE MMMM d h:mm:ss a' }}</div>
+    </div>
+    <div class="bg-slate-300/70 flex rounded-tr-lg h-90% rounded-b-lg flex-row p-4 gap-4 justify-between">
+      <div class="flex-none basis-1/5">
+        <app-weather></app-weather>
+      </div>
+      <div class="flex-1 rounded-lg basis-3/5">
+          <app-map></app-map>
+      </div> 
+    </div>
+  </div>
+</div>

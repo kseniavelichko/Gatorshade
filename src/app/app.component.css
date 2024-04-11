@@ -1,0 +1,13 @@
+router-outlet {
+    height: 100%;
+    display: none;
+}
+:host {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+}
+
+:host ::ng-deep router-outlet+* {
+    flex: 1 1 auto;
+}

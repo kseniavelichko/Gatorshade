@@ -1,0 +1,9 @@
+<google-map height="765px" width="100%" [center]="center" [zoom]="zoom">
+  <map-marker #marker="mapMarker" *ngFor="let markerObj of markers" [position]="markerObj.position" [title]="markerObj.title" [options]="coolingMarker" (mapClick)="openInfo(marker, markerObj)"></map-marker>
+  <map-marker #marker="mapMarker" *ngFor="let markerObj of parks" [position]="markerObj.position" [title]="markerObj.title" [options]="parkMarker" (mapClick)="openInfo(marker, markerObj)"></map-marker>
+  <map-info-window> 
+    <div class="font-semibold">{{ locationTitle }}</div>
+    <div>{{ content }}</div>
+  </map-info-window>
+</google-map>
+<div id="legend"><div class="text-lg text-[#5db95d] font-bold">Legend</div></div>

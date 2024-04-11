@@ -1,0 +1,41 @@
+.weatherBox {
+    background-color: white;
+    border-radius: 20px;
+    border: 4px solid rgba(219, 91, 48, 0.3);
+    padding: 1rem;
+}
+
+.warning, .info, .warningRed, .warningYellow, .warningOrange, .warningOrangeLight{
+    margin-top: 5px;
+    background-color: white;
+    border-radius: 20px;
+    padding: 1rem;
+}
+.infoButton {
+    background-color: #c9f1c9;
+    padding: 5px;
+    width: 100%;
+    border-radius: 10px;
+    font-weight: 700;
+    color: rgb(94, 177, 94);
+}
+.info {
+    border: 4px solid rgb(167, 209, 167);
+}
+
+.warningRed {
+    color: rgb(239, 68, 68);
+    border: 4px solid rgb(239, 68, 68, 0.5);
+}
+.warningYellow {
+    color: rgb(230, 202, 48);
+    border: 4px solid rgb(254, 240, 138, 0.6);
+}
+.warningOrange {
+    color: rgb(234, 88, 12);
+    border: 4px solid rgb(234, 88, 12, 0.4);
+}
+.warningOrangeLight {
+    color: rgb(253, 186, 116);
+    border: 4px solid rgb(253, 186, 116, 0.6);
+}

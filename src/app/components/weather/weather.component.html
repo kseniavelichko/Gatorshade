@@ -1,0 +1,49 @@
+
+<div class="weatherBox" *ngIf="currentWeather">
+  <h1 class="text-2xl text-[#db5b30]/85 font-bold">Current Weather</h1>
+    <div class="flex flex-row justify-between">
+      <div class="font-bold">Temperature:</div>
+      <p>{{ currentWeather.main.temp }}°F</p>
+    </div>
+    <div class="flex flex-row justify-between">
+      <div class="font-bold">Humidity:</div>
+      <p>{{ currentWeather.main.humidity }}%</p>
+    </div>
+    <div class="flex flex-row justify-between">
+      <div class="font-bold">Precipitation:</div>
+      <p>{{ currentWeather.weather[0].description }}</p>
+    </div>
+    <div class="flex flex-row mt-2 -ml-2 p-2 rounded-lg justify-between" [ngClass]="getColor(currentWeather.main.feels_like)">
+      <div class="font-bold">Heat Index:</div>
+      <p>{{ currentWeather.main.feels_like }}</p>
+    </div>
+  </div>
+
+  <div *ngIf="warning" [ngClass]="getWarning()">
+      <div class="font-semibold -ml-2 p-2 rounded-lg text-slate-800" [ngClass]="getColor(currentWeather.main.feels_like)">
+        <p>{{ warning }}</p>
+      </div>
+      <div class="font-semibold mt-2"> {{ warningMessage }}</div>
+    </div>
+
+    <div class="info">
+      <h1 class="text-2xl text-[#db5b30]/85 font-bold mb-2">Information</h1>
+      <button pButton class="infoButton" type="button" (click)="seeDef = !seeDef">
+        {{ seeDef ? 'See Less' : 'Heat Index Definition' }}
+        <i *ngIf="!seeDef" class="pi pi-angle-down"></i>
+      </button>
+      <div *ngIf="seeDef" class="p-2 font-semibold text-sm -mt-2 rounded-b-lg bg-[#c9f1c9]">
+        Heat index is an estimate of what the temperature feels like when relative humidity is combined with air temperature.
+          This number does not take into account the effects of being in direct sunlight, where the felt temperature may be even higher. 
+      </div>
+      <button pButton class="infoButton mt-2" type="button" (click)="viewResources = !viewResources">
+        {{ viewResources ? 'See Less' : 'View Resources' }}
+        <i *ngIf="!viewResources" class="pi pi-angle-down"></i>
+      </button>
+      <div *ngIf="viewResources" class="text-[#5db95d] underline p-2 font-semibold text-sm -mt-2 rounded-b-lg bg-[#c9f1c9]">
+        <div><a href="https://alachuacounty.us/news/Article/pages/Excessive-Heat-to-Continue-Tips--Resources-for-Keeping-Cool-from-Alachua-County-Emergency-Management.aspx" target="_blank">Cooling Centers in Gainesville</a></div>
+        <div><a href="https://www.weather.gov/ffc/hichart" target="_blank">Heat Index Chart</a></div>
+        <div><a href="https://www.weather.gov/ama/heatindex" target="_blank">Heat Index Definition</a></div>
+        <div><a href="https://www.ready.gov/heat" target="_blank">Safety Tips on Dealing with Heat</a></div>
+      </div>
+    </div>
