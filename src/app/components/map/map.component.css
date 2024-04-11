@@ -1,0 +1,17 @@
+.busStop {
+    width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: red;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); 
+}
+
+#legend {
+    margin-top: 5px;
+    margin-right: 5px;
+    background-color: white;
+    border-radius: 20px;
+    padding: 8px;
+    border: 4px solid rgb(167, 209, 167);
+  }
