@@ -18,6 +18,39 @@ export class MapComponent implements AfterViewInit{
   @ViewChild(MapInfoWindow, { static: false }) routeInfo: MapInfoWindow | any;
   @ViewChild(GoogleMap, { static: false }) map: GoogleMap | any;
   routeLayer: any;
+  blueIcon: google.maps.Icon = {
+    url: '../../assets/blue.png',
+    scaledSize: new google.maps.Size(30, 30)
+  }
+  blueYellowIcon: google.maps.Icon = {
+    url: '../../assets/blue-yellow.png',
+    scaledSize: new google.maps.Size(30, 30)
+  }
+  redIcon: google.maps.Icon = {
+    url: '../../assets/red.png',
+    scaledSize: new google.maps.Size(30, 30)
+  }
+  yellowIcon: google.maps.Icon = {
+    url: '../../assets/yellow.png',
+    scaledSize: new google.maps.Size(30, 30)
+  }
+  parkMarker: google.maps.MarkerOptions = {
+    draggable: false,
+    icon: this.blueYellowIcon
+  };
+  coolingMarker: google.maps.MarkerOptions = {
+    draggable: false,
+    icon: this.blueIcon
+  };
+  incompleteMarker: google.maps.MarkerOptions = {
+    draggable: false,
+    icon: this.redIcon
+  };
+  completeMarker: google.maps.MarkerOptions = {
+    draggable: false,
+    icon: this.yellowIcon
+  };
+  zoom = 12;
   constructor(private httpClient: HttpClient, private weatherService: WeatherService) {
   }
   heatMap: boolean = true;
@@ -99,7 +132,7 @@ export class MapComponent implements AfterViewInit{
           for (let i = 0; i < geometry.getArray().length; i++) {
             const vertex = geometry.getArray()[i];
             const distance = google.maps.geometry.spherical.computeDistanceBetween(point, vertex);
-            if (distance <= 250) {
+            if (distance <= 350) {
               areTheyClose = true; 
               this.closestBuses.add(properties + ": " + feature.getProperty('long_name'));
             }
@@ -117,21 +150,21 @@ export class MapComponent implements AfterViewInit{
     console.log(JSON.stringify(this.map.getCenter()))
   }
   markers: any[] = [
-    { title: 'Alachua Branch Library', position: { lat: 29.796937, lng: -82.487590 }, address: '14913 N.W. 140 Street, Alachua' },
-    { title: 'Archer Branch Library', position: { lat: 29.529294, lng: -82.520197 }, address: '13266 S.W. State Road 45, Archer' },
-    { title: 'Clarence R Kelly Center', position: { lat: 29.668782, lng: -82.309217 }, address: '1701 N.E. 8th Avenue, Gainesville' },
-    { title: 'Cone Park Branch Library', position: { lat: 29.648935, lng: -82.305632 }, address: '2801 E. University Ave., Gainesville' },
-    { title: 'Eastside Community Center at Cone Park', position: { lat: 29.649674, lng: -82.304237 }, address: '2841 E.University Avenue, Gainesville' },
-    { title: 'Hawthorne Branch Library', position: { lat: 29.587381, lng: -82.113358 }, address: '6640 S.E. 221 Street, Hawthorne' },
-    { title: 'Headquarters Library', position: { lat: 29.651997, lng: -82.325440 }, address: '401 E. University Avenue, Gainesville' },
-    { title: 'High Springs Branch Library', position: { lat: 29.823832, lng: -82.589744 }, address: '23779 W. U.S. Hwy 27, High Springs' },
-    { title: 'Library Partnership Branch', position: { lat: 29.667960, lng: -82.307258 }, address: '912 N.E. 16 Avenue, Gainesville' },
-    { title: 'Micanopy Branch Library', position: { lat: 29.507782, lng: -82.281984 }, address: '706 N.E. Cholokka Boulevard, Micanopy' },
-    { title: 'Millhopper Branch Library', position: { lat: 29.688163, lng: -82.367582 }, address: '3145 N.W. 43rd Street, Gainesville' },
-    { title: 'MLK Center', position: { lat: 29.664935, lng: -82.306711 }, address: '1028 N.E. 14th Street, Gainesville' },
-    { title: 'Newberry Branch Library', position: { lat: 29.634003, lng: -82.606481 }, address: '110 S. Seaboard Drive, Newberry' },
-    { title: 'Tower Road Branch Library', position: { lat: 29.634073, lng: -82.389595 }, address: '3020 S.W. 75th Street, Gainesville' },
-    { title: 'Waldo Branch Library', position: { lat: 29.787931, lng: -82.160516 }, address: '15150 N.E. U.S. Hwy 301, Waldo' },
+    { option: this.coolingMarker, title: 'Alachua Branch Library', position: { lat: 29.796937, lng: -82.487590 }, address: '14913 N.W. 140 Street, Alachua' },
+    { option: this.coolingMarker, title: 'Archer Branch Library', position: { lat: 29.529294, lng: -82.520197 }, address: '13266 S.W. State Road 45, Archer' },
+    { option: this.coolingMarker, title: 'Clarence R Kelly Center', position: { lat: 29.668782, lng: -82.309217 }, address: '1701 N.E. 8th Avenue, Gainesville' },
+    { option: this.coolingMarker, title: 'Cone Park Branch Library', position: { lat: 29.648935, lng: -82.305632 }, address: '2801 E. University Ave., Gainesville' },
+    { option: this.coolingMarker, title: 'Eastside Community Center at Cone Park', position: { lat: 29.649674, lng: -82.304237 }, address: '2841 E.University Avenue, Gainesville' },
+    { option: this.coolingMarker, title: 'Hawthorne Branch Library', position: { lat: 29.587381, lng: -82.113358 }, address: '6640 S.E. 221 Street, Hawthorne' },
+    { option: this.coolingMarker, title: 'Headquarters Library', position: { lat: 29.651997, lng: -82.325440 }, address: '401 E. University Avenue, Gainesville' },
+    { option: this.coolingMarker, title: 'High Springs Branch Library', position: { lat: 29.823832, lng: -82.589744 }, address: '23779 W. U.S. Hwy 27, High Springs' },
+    { option: this.coolingMarker, title: 'Library Partnership Branch', position: { lat: 29.667960, lng: -82.307258 }, address: '912 N.E. 16 Avenue, Gainesville' },
+    { option: this.coolingMarker, title: 'Micanopy Branch Library', position: { lat: 29.507782, lng: -82.281984 }, address: '706 N.E. Cholokka Boulevard, Micanopy' },
+    { option: this.coolingMarker, title: 'Millhopper Branch Library', position: { lat: 29.688163, lng: -82.367582 }, address: '3145 N.W. 43rd Street, Gainesville' },
+    { option: this.coolingMarker, title: 'MLK Center', position: { lat: 29.664935, lng: -82.306711 }, address: '1028 N.E. 14th Street, Gainesville' },
+    { option: this.coolingMarker, title: 'Newberry Branch Library', position: { lat: 29.634003, lng: -82.606481 }, address: '110 S. Seaboard Drive, Newberry' },
+    { option: this.coolingMarker, title: 'Tower Road Branch Library', position: { lat: 29.634073, lng: -82.389595 }, address: '3020 S.W. 75th Street, Gainesville' },
+    { option: this.coolingMarker, title: 'Waldo Branch Library', position: { lat: 29.787931, lng: -82.160516 }, address: '15150 N.E. U.S. Hwy 301, Waldo' },
   ];
   parks: any[] = [
     {
@@ -266,7 +299,11 @@ export class MapComponent implements AfterViewInit{
     }
   ]
   openInfo(marker: MapMarker, markerObj: any) {
+    this.markers.forEach(mark => {
+        mark.option = this.coolingMarker;
+    });
     this.coolingCenter = marker.getPosition();
+    markerObj.option = this.completeMarker;
     this.loadClosest();
     this.locationTitle = markerObj.title;
     this.content = markerObj.address;
@@ -288,38 +325,5 @@ export class MapComponent implements AfterViewInit{
     });
     this.map.overlayMapTypes.push(temperatureLayer);
 };
-  blueIcon: google.maps.Icon = {
-    url: '../../assets/blue.png',
-    scaledSize: new google.maps.Size(30, 30)
-  }
-  blueYellowIcon: google.maps.Icon = {
-    url: '../../assets/blue-yellow.png',
-    scaledSize: new google.maps.Size(30, 30)
-  }
-  redIcon: google.maps.Icon = {
-    url: '../../assets/red.png',
-    scaledSize: new google.maps.Size(30, 30)
-  }
-  yellowIcon: google.maps.Icon = {
-    url: '../../assets/yellow.png',
-    scaledSize: new google.maps.Size(30, 30)
-  }
-  parkMarker: google.maps.MarkerOptions = {
-    draggable: false,
-    icon: this.blueYellowIcon
-  };
-  coolingMarker: google.maps.MarkerOptions = {
-    draggable: false,
-    icon: this.blueIcon
-  };
-  incompleteMarker: google.maps.MarkerOptions = {
-    draggable: false,
-    icon: this.redIcon
-  };
-  completeMarker: google.maps.MarkerOptions = {
-    draggable: false,
-    icon: this.yellowIcon
-  };
-  zoom = 12;
 
 }

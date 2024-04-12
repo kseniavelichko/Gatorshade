@@ -14,7 +14,7 @@
 </div>
 <google-map height="700px" width="100%" [center]="center" [zoom]="zoom">
   <ng-container *ngIf="centerView">
-  <map-marker #marker="mapMarker" *ngFor="let markerObj of markers" [position]="markerObj.position" [title]="markerObj.title" [options]="coolingMarker" (mapClick)="openInfo(marker, markerObj)"></map-marker>
+  <map-marker #marker="mapMarker" *ngFor="let markerObj of markers" [position]="markerObj.position" [title]="markerObj.title" [options]="markerObj.option" (mapClick)="openInfo(marker, markerObj)"></map-marker>
 </ng-container>
   <map-info-window #infoWindow> 
     <div class="font-semibold">{{ locationTitle }}</div>
