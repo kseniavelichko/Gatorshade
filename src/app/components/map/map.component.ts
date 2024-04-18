@@ -1,15 +1,15 @@
 import { Component , AfterViewInit, ViewChild} from '@angular/core';
-import { MapInfoWindow, GoogleMapsModule, GoogleMap, MapMarker } from '@angular/google-maps';
+import { MapInfoWindow, GoogleMapsModule, GoogleMap, MapMarker, MarkerClustererOptions, MapMarkerClusterer } from '@angular/google-maps';
 import { CommonModule } from '@angular/common';
 import { WeatherService } from '../../services/weather.service';
 import { HttpClient } from '@angular/common/http';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { FormsModule } from '@angular/forms';
-
+import { MarkerClusterer } from '@googlemaps/markerclusterer';
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [GoogleMapsModule, FormsModule, ToggleButtonModule, MapMarker, CommonModule, MapInfoWindow],
+  imports: [GoogleMapsModule, FormsModule, ToggleButtonModule, MapMarkerClusterer, MapMarker, CommonModule, MapInfoWindow],
   templateUrl: './map.component.html',
   styleUrl: './map.component.css'
 })
@@ -18,6 +18,8 @@ export class MapComponent implements AfterViewInit{
   @ViewChild(MapInfoWindow, { static: false }) routeInfo: MapInfoWindow | any;
   @ViewChild(GoogleMap, { static: false }) map: GoogleMap | any;
   routeLayer: any;
+  markerClustererImagePath =
+      'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m';
   blueIcon: google.maps.Icon = {
     url: '../../assets/blue.png',
     scaledSize: new google.maps.Size(30, 30)
@@ -34,13 +36,21 @@ export class MapComponent implements AfterViewInit{
     url: '../../assets/yellow.png',
     scaledSize: new google.maps.Size(30, 30)
   }
+  shelterIcon: google.maps.Icon = {
+    url: '../../assets/shelter.png',
+    scaledSize: new google.maps.Size(30, 30)
+  }
+  yellowShelter: google.maps.Icon = {
+    url: '../../assets/yellowshelter.png',
+    scaledSize: new google.maps.Size(30, 30)
+  }
   parkMarker: google.maps.MarkerOptions = {
     draggable: false,
     icon: this.blueYellowIcon
   };
   coolingMarker: google.maps.MarkerOptions = {
     draggable: false,
-    icon: this.blueIcon
+    icon: this.shelterIcon
   };
   incompleteMarker: google.maps.MarkerOptions = {
     draggable: false,
@@ -48,7 +58,7 @@ export class MapComponent implements AfterViewInit{
   };
   completeMarker: google.maps.MarkerOptions = {
     draggable: false,
-    icon: this.yellowIcon
+    icon: this.yellowShelter
   };
   zoom = 12;
   constructor(private httpClient: HttpClient, private weatherService: WeatherService) {
@@ -56,12 +66,12 @@ export class MapComponent implements AfterViewInit{
   heatMap: boolean = true;
   centerView: boolean = true;
   patterns: any[] = [];
-  coolingCenter: google.maps.LatLng | any;
+  coolingCenter?: google.maps.LatLng;
   closestBuses: Set<any> = new Set();
   icons: Record<string, any> = {
     blueStop: {
       name: "Cooling Center",
-      icon: "../../assets/blue.png",
+      icon: "../../assets/shelter.png",
     }
   };
   displayTemp() {
@@ -74,6 +84,9 @@ export class MapComponent implements AfterViewInit{
   }
   displayStops() {
     if (!this.centerView) {
+      this.markers.forEach(mark => {
+        mark.option = this.coolingMarker;
+    });
       this.loadClosest();
     }
   }
@@ -99,7 +112,7 @@ export class MapComponent implements AfterViewInit{
     this.map.data.forEach((feature: any) => {
       
         const routeId = feature.getProperty('route_id');
-        const isVisible = this.closestRoute(this.coolingCenter, routeId);
+        const isVisible = this.closestRoute(this.coolingCenter!, routeId);
         this.map.data.overrideStyle(feature, { visible: isVisible });
         if (!this.centerView) {
           this.map.data.overrideStyle(feature, { visible: false });
@@ -107,6 +120,7 @@ export class MapComponent implements AfterViewInit{
       
     });
   }
+  realMarkers: google.maps.Marker[] = [];
   ngAfterViewInit(): void {
     const legend = document.getElementById("legend") as HTMLElement;
     for (const key in this.icons) {
@@ -122,6 +136,19 @@ export class MapComponent implements AfterViewInit{
     this.getWeather();
     this.loadGeoJSON();
     this.loadClosest();
+    
+    this.markers.forEach(marker => {
+      var newMarker = new google.maps.Marker({
+        title: marker.title,
+        position: new google.maps.LatLng(marker.position.lat, marker.position.lng),
+        icon: this.shelterIcon,
+        draggable: false,
+      })
+    
+      this.realMarkers.push(newMarker);
+    });
+    console.log(this.realMarkers);
+    //var markerCluster = new MarkerClusterer(this.map, this.realMarkers);
   }
   closestRoute(point: google.maps.LatLng, featureId: number): boolean {
     var areTheyClose = false;
@@ -302,7 +329,7 @@ export class MapComponent implements AfterViewInit{
     this.markers.forEach(mark => {
         mark.option = this.coolingMarker;
     });
-    this.coolingCenter = marker.getPosition();
+    this.coolingCenter = marker.getPosition()!;
     markerObj.option = this.completeMarker;
     this.loadClosest();
     this.locationTitle = markerObj.title;
@@ -319,7 +346,7 @@ export class MapComponent implements AfterViewInit{
           return 'https://tile.openweathermap.org/map/temp_new/' + zoom + '/' + coord.x + '/' + coord.y + '.png?appid=305b8d0b9ea7ea79d9ca3cd998b0a95f'
       },
       tileSize: new google.maps.Size(256, 256),
-      opacity: 0.9,
+      opacity: 0.7,
       name: 'Temperature',
       maxZoom: 9
     });
